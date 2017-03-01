@@ -6,7 +6,8 @@ main =
     defaultErrorHandler defaultFatalMessager defaultFlushOut $
       runGhc (Just libdir) $ 
         do dflags <- getSessionDynFlags
-           setSessionDynFlags dflags
+           let dflags' = dflags -- { hscTarget = HscNothing }
+           setSessionDynFlags dflags'
            target <- guessTarget "./data/Main.hs" Nothing
            setTargets [target]
            load LoadAllTargets
