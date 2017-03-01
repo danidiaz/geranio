@@ -1,12 +1,16 @@
 import GHC
 import GHC.Paths (libdir)
 import DynFlags
+import Control.Monad
+import Control.Monad.IO.Class
  
 main = 
     defaultErrorHandler defaultFatalMessager defaultFlushOut $
       runGhc (Just libdir) $ 
         do dflags <- getSessionDynFlags
-           let dflags' = dflags -- { hscTarget = HscNothing }
+           let dflags' = dflags { hscTarget = HscNothing
+                                , ghcLink =  NoLink 
+                                }
            setSessionDynFlags dflags'
            target <- guessTarget "./data/Main.hs" Nothing
            setTargets [target]
@@ -19,5 +23,6 @@ main =
            n <- getNamesInScope
            c <- return $ coreModule d
            g <- getModuleGraph
-           mapM showModule g     
+           gr <- mapM showModule g     
+           liftIO $ traverse print gr
            return ()
