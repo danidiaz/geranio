@@ -14,7 +14,8 @@ main =
            setSessionDynFlags dflags'
            target <- guessTarget "./data/Main.hs" Nothing
            setTargets [target]
-           load LoadAllTargets
+           _ <- depanal [] False
+--           load LoadAllTargets
            modSum <- getModSummary $ mkModuleName "Main"
            p <- parseModule modSum
            t <- typecheckModule p
